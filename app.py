@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect
 from bokeh.plotting import figure, show
 from bokeh.palettes import Set1 as palette
 from bokeh.embed import components
+import pandas as pd
 
 import requests
 import itertools
@@ -23,7 +24,7 @@ def _url(stock, columns):
 
     return output
 
-def query_date(stock, columns):
+def query_data(stock, columns):
     url = _url(stock, columns)
 
     try:
@@ -55,11 +56,26 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+	# Determine stock and columns to display
+    stock = request.args.get('stock')
+    if stock == None:
+        stock = 'AAPL'
+    columns = request.args.get('columns')
+    if columns == None:
+        columns = ['open']
+
+    # Query Quandl API for data
+    data = query_data(stock, columns)
+
+    # Produce plot
+    script, div = plot_data(data)
+
+	# Embed plot into HTML via Flask Render
+    return render_template("stock_plot.html", script=script, div=div, stock=stock, columns=columns)
 
 @app.route('/about')
 def about():
     return render_template('about.html')
 
 if __name__ == '__main__':
-    app.run(port=33507)
+    app.run(port=33507, debug=True)
