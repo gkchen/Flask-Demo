@@ -36,7 +36,7 @@ def query_data(stock, columns):
 
     return output
 
-def plot_data(data, stock, height=300, sizing_mode='scale_width', tools='pan,box_zoom,wheel_zoom,reset,crosshair,hover,save', **kwargs):
+def plot_data(data, stock, height=400, width=1.618*400, tools='pan,box_zoom,wheel_zoom,reset,crosshair,hover,save', **kwargs):
     end = pd.to_datetime('2018-1-1')
     beginning = end - pd.DateOffset(years=1)
     dates = {'gte': beginning, 'lte': end}
@@ -59,14 +59,15 @@ app.vars = {}
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'GET':
-        return render_template('stock_info.html')
+        return render_template('stock_form.html')
 
     else:
     	# Determine stock and columns to display
         stock = request.form['stock']
         if not stock:
             stock = 'AAPL'
-        columns = [request.form['columns1'], request.form['columns2'], request.form['columns3'], request.form['columns4']]
+        # columns = [request.form['columns1'], request.form['columns2'], request.form['columns3'], request.form['columns4']]
+        columns = request.form.getlist('columns')
         if not columns:
             columns = ['open']
 
@@ -77,6 +78,7 @@ def index():
         script, div = plot_data(data, stock)
     	# Embed plot into HTML via Flask Render
         return render_template("stock_plot.html", script=script, div=div)
+        # return render_template('about', stock=stock, columns=columns)
 
 @app.route('/about')
 def about():
