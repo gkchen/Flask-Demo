@@ -36,7 +36,7 @@ def query_data(stock, columns):
 
     return output
 
-def plot_data(data, height=300, sizing_mode='scale_width', tools='pan,box_zoom,wheel_zoom,reset,crosshair,hover,save', **kwargs):
+def plot_data(data, stock, height=300, sizing_mode='scale_width', tools='pan,box_zoom,wheel_zoom,reset,crosshair,hover,save', **kwargs):
     end = pd.to_datetime('2018-1-1')
     beginning = end - pd.DateOffset(years=1)
     dates = {'gte': beginning, 'lte': end}
@@ -54,28 +54,33 @@ def plot_data(data, height=300, sizing_mode='scale_width', tools='pan,box_zoom,w
 
 app = Flask(__name__)
 
-@app.route('/')
+app.vars = {}
+
+@app.route('/', methods=['GET', 'POST'])
 def index():
-	# Determine stock and columns to display
-    stock = request.args.get('stock')
-    if stock == None:
-        stock = 'AAPL'
-    columns = request.args.get('columns')
-    if columns == None:
-        columns = ['open']
+    if request.method == 'GET':
+        return render_template('stock_info.html')
 
-    # Query Quandl API for data
-    data = query_data(stock, columns)
+    else:
+    	# Determine stock and columns to display
+        stock = request.form['stock']
+        if not stock:
+            stock = 'AAPL'
+        columns = [request.form['columns1'], request.form['columns2'], request.form['columns3'], request.form['columns4']]
+        if not columns:
+            columns = ['open']
 
-    # Produce plot
-    script, div = plot_data(data)
+        # Query Quandl API for data
+        data = query_data(stock, columns)
 
-	# Embed plot into HTML via Flask Render
-    return render_template("stock_plot.html", script=script, div=div, stock=stock, columns=columns)
+        # Produce plot
+        script, div = plot_data(data, stock)
+    	# Embed plot into HTML via Flask Render
+        return render_template("stock_plot.html", script=script, div=div)
 
 @app.route('/about')
 def about():
     return render_template('about.html')
 
 if __name__ == '__main__':
-    app.run(port=33507, debug=True)
+    app.run(debug=True)
