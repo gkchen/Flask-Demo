@@ -7,23 +7,26 @@
     <meta name="author" content="@gotoariel">
     <!-- <link rel="icon" href="favicon.ico"> -->
 
-    <title>Wilkommen, bienvenue, and welcome to Heroku!</title>
+    <title>Stock Form</title>
 
-    <!-- Bootstrap core CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <!-- Local CSS -->
+    <link rel=stylesheet type=text/css href='{{url_for('static',filename='style.css')}}'>
   </head>
   <body>
     <div class="container">
       <div class="row">
         <div class="col-lg-12 text-left">
-          <h2>Hello, World!</h2>
-          <ul>
-            <li><a href="/about">About</a></li>
-            <li><a target="_blank" href="https://www.heroku.com/">Heroku</a></li>
-            <li><a target="_blank" href="http://flask.pocoo.org/">Flask</a></li>
-            <li><a target="_blank" href="http://jinja.pocoo.org/docs/2.9/">Jinja2</a></li>
-            <li><a target="_blank" href="http://getbootstrap.com/">Bootstrap</a></li>
-          </ul>
+            <H1>Stock Form</H1>
+            <p><a href="/about">About</a></p>
+
+            <form method='post', action="/">
+                Stock Abbreviation: <input type="text" name="stock" placeholder="AAPL"> <br>
+                <input type="checkbox" name="columns" value="open"> open <br>
+                <input type="checkbox" name="columns" value="close"> close <br>
+                <input type="checkbox" name="columns" value="adj_open"> adjusted open <br>
+                <input type="checkbox" name="columns" value="adj_close"> adjusted close <br>
+                <input type='submit' value='Submit'>
+            </form>
         </div>
       </div>
     </div>
