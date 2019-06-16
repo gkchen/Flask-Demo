@@ -38,23 +38,22 @@ def query_data(stock, columns):
 
 def plot_data(data, stock, height=400, width=1.618*400, tools='pan,box_zoom,wheel_zoom,reset,crosshair,hover,save', **kwargs):
     end = pd.to_datetime('2018-1-1')
-    beginning = end - pd.DateOffset(years=1)
-    dates = {'gte': beginning, 'lte': end}
+    start = end - pd.DateOffset(years=1)
 
-    x = data.index
+    temp = data.loc[end:start]
+
+    x = temp.index
     colors = itertools.cycle(palette[8])
 
     p = figure(tools=tools, title=stock.upper(), x_axis_label='Date', y_axis_label='Value', x_axis_type='datetime')
-    for key, color in zip(data.columns, colors):
-        p.line(x, data[key], color=color, legend=key)
+    for key, color in zip(temp.columns, colors):
+        p.line(x, temp[key], color=color, legend=key)
     p.legend.location = 'bottom_left'
     script, div = components(p)
 
     return script, div
 
 app = Flask(__name__)
-
-app.vars = {}
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
