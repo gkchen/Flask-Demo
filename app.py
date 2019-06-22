@@ -3,6 +3,7 @@ from bokeh.plotting import figure, show
 from bokeh.palettes import Set1 as palette
 from bokeh.embed import components
 import pandas as pd
+import simplejson as json
 
 import requests
 import itertools
@@ -16,7 +17,7 @@ def _url(stock, columns):
         columns = [columns]
     columns.append('date')
     api_key = 'api_key=T1uisS-t1xu7ASeQHMzx'
-    url = 'https://www.quandl.com/api/v3/datatables/WIKI/PRICES.csv?'
+    url = 'https://www.quandl.com/api/v3/datatables/WIKI/PRICES.json?'
     keys = 'qopts.columns=' + ','.join(columns)
     ticker = 'ticker=%s' %(stock.upper())
 
@@ -28,7 +29,8 @@ def query_data(stock, columns):
     url = _url(stock, columns)
 
     try:
-        output = pd.read_csv(url)
+        j = requests.get(url)
+        output = pd.DataFrame(json.loads(j.content)['datatable']['data'], columns=columns)
     except:
         return 'File not found'
     output['date'] = output['date'].apply(_convert_date)
